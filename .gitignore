@@ -6,4 +6,7 @@ doc
 *.iml
 *.ipr
 *.iws
-test-env
+nbproject
+package-lock.json
+yarn.lock
+/js

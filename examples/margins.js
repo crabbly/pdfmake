@@ -1,15 +1,8 @@
-var fonts = {
-	Roboto: {
-		normal: 'fonts/Roboto-Regular.ttf',
-		bold: 'fonts/Roboto-Medium.ttf',
-		italics: 'fonts/Roboto-Italic.ttf',
-		bolditalics: 'fonts/Roboto-Italic.ttf'
-	}
-};
+var pdfmake = require('../js/index'); // only during development, otherwise use the following line
+//var pdfmake = require('pdfmake');
 
-var PdfPrinter = require('../src/printer');
-var printer = new PdfPrinter(fonts);
-var fs = require('fs');
+var Roboto = require('../fonts/Roboto');
+pdfmake.addFonts(Roboto);
 
 
 var docDefinition = {
@@ -33,13 +26,14 @@ var docDefinition = {
 		},
 		{
 			stack: [
-				{ text: [
+				{
+					text: [
 						'This line begins a stack of paragraphs. The whole stack uses a ',
 						{ text: 'superMargin', italics: true },
 						' style (with margin and fontSize properties).',
-						]
+					]
 				},
-				{ text: ['When you look at the', { text: ' document definition', italics: true }, ', you will notice that fontSize is inherited by all paragraphs inside the stack.' ]},
+				{ text: ['When you look at the', { text: ' document definition', italics: true }, ', you will notice that fontSize is inherited by all paragraphs inside the stack.'] },
 				'Margin however is only applied once (to the whole stack).'
 			],
 			style: 'superMargin'
@@ -63,7 +57,7 @@ var docDefinition = {
 				'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Malit profecta versatur nomine ocurreret multavit, officiis viveremus aeternum superstitio suspicor alia nostram, quando nostros congressus susceperant concederetur leguntur iam, vigiliae democritea tantopere causae, atilii plerumque ipsas potitur pertineant multis rem quaeri pro, legendum didicisse credere ex maluisset per videtis. Cur discordans praetereat aliae ruinae dirigentur orestem eodem, praetermittenda divinum. Collegisti, deteriora malint loquuntur officii cotidie finitas referri doleamus ambigua acute. Adhaesiones ratione beate arbitraretur detractis perdiscere, constituant hostis polyaeno. Diu concederetur.\n',
 				'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Malit profecta versatur nomine ocurreret multavit, officiis viveremus aeternum superstitio suspicor alia nostram, quando nostros congressus susceperant concederetur leguntur iam, vigiliae democritea tantopere causae, atilii plerumque ipsas potitur pertineant multis rem quaeri pro, legendum didicisse credere ex maluisset per videtis. Cur discordans praetereat aliae ruinae dirigentur orestem eodem, praetermittenda divinum. Collegisti, deteriora malint loquuntur officii cotidie finitas referri doleamus ambigua acute. Adhaesiones ratione beate arbitraretur detractis perdiscere, constituant hostis polyaeno. Diu concederetur.\n',
 				'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Malit profecta versatur nomine ocurreret multavit, officiis viveremus aeternum superstitio suspicor alia nostram, quando nostros congressus susceperant concederetur leguntur iam, vigiliae democritea tantopere causae, atilii plerumque ipsas potitur pertineant multis rem quaeri pro, legendum didicisse credere ex maluisset per videtis. Cur discordans praetereat aliae ruinae dirigentur orestem eodem, praetermittenda divinum. Collegisti, deteriora malint loquuntur officii cotidie finitas referri doleamus ambigua acute. Adhaesiones ratione beate arbitraretur detractis perdiscere, constituant hostis polyaeno. Diu concederetur.\n',
-				],
+			],
 			margin: [0, 20, 0, 0],
 			alignment: 'justify'
 		}
@@ -73,18 +67,23 @@ var docDefinition = {
 			fontSize: 18,
 			bold: true,
 			alignment: 'right',
-			margin: [0,190,0,80]
+			margin: [0, 190, 0, 80]
 		},
 		subheader: {
 			fontSize: 14
 		},
 		superMargin: {
 			margin: [20, 0, 40, 0],
-			fontSize: 15,
+			fontSize: 15
 		}
 	}
 };
 
-var pdfDoc = printer.createPdfKitDocument(docDefinition);
-pdfDoc.pipe(fs.createWriteStream('pdfs/margins.pdf'));
-pdfDoc.end();
+var now = new Date();
+
+var pdf = pdfmake.createPdf(docDefinition);
+pdf.write('pdfs/margins.pdf').then(() => {
+	console.log(new Date() - now);
+}, err => {
+	console.error(err);
+});

@@ -1,16 +1,8 @@
-var fonts = {
-	Roboto: {
-		normal: 'fonts/Roboto-Regular.ttf',
-		bold: 'fonts/Roboto-Medium.ttf',
-		italics: 'fonts/Roboto-Italic.ttf',
-		bolditalics: 'fonts/Roboto-Italic.ttf'
-	}
-};
+var pdfmake = require('../js/index'); // only during development, otherwise use the following line
+//var pdfmake = require('pdfmake');
 
-var PdfPrinter = require('../src/printer');
-var printer = new PdfPrinter(fonts);
-var fs = require('fs');
-
+var Roboto = require('../fonts/Roboto');
+pdfmake.addFonts(Roboto);
 
 var docDefinition = {
 	content: [
@@ -25,11 +17,11 @@ var docDefinition = {
 				{ text: 'a better ', fontSize: 15, bold: true },
 				'control over it. \nEach inline can be ',
 				{ text: 'styled ', fontSize: 20 },
-				{ text: 'independently ', italics: true, fontSize: 40},
+				{ text: 'independently ', italics: true, fontSize: 40 },
 				'then.\n\n'
 			]
 		},
-		{	text: 'Mixing named styles and style-overrides', style: 'header' },
+		{ text: 'Mixing named styles and style-overrides', style: 'header' },
 		{
 			style: 'bigger',
 			italics: false,
@@ -56,11 +48,16 @@ var docDefinition = {
 		},
 		bigger: {
 			fontSize: 15,
-			italics: true,
+			italics: true
 		}
 	}
 };
 
-var pdfDoc = printer.createPdfKitDocument(docDefinition);
-pdfDoc.pipe(fs.createWriteStream('pdfs/styling_inlines.pdf'));
-pdfDoc.end();
+var now = new Date();
+
+var pdf = pdfmake.createPdf(docDefinition);
+pdf.write('pdfs/styling_inlines.pdf').then(() => {
+	console.log(new Date() - now);
+}, err => {
+	console.error(err);
+});
